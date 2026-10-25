@@ -1,0 +1,20 @@
+# Local secrets and generated state. Do not commit these.
+.env
+*.pem
+*.key
+
+# Project-local Postgres, logs, pids, and job scratch.
+var/
+
+# Generated image output from the adapter.
+media/
+
+# Virtualenv and bytecode.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
