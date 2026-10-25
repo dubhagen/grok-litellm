@@ -29,6 +29,16 @@ Postgres lives under `var/` and listens on `127.0.0.1:55432` only. LiteLLM's adm
 
 Chat models advertise vision support so clients can send images. Token limits in `config.yaml` are local declarations for the proxy, not a claim about upstream capacity.
 
+The extra chat names below are their own rows in `model_list`. Each row calls `openai/grok-4.7`, so the adapter still overrides the upstream model to `grok-4.7`. The admin Models page reads `/v2/model/info`, which lists those rows. `GET /v1/models` lists them too. The page shows 50 names at a time. These names are for localhost development. They are separate public names for one deployment.
+
+| Family | Aliases |
+| --- | --- |
+| Claude | `claude-haiku-4-5`, `claude-haiku-4-5-20251001`, `claude-haiku-5-5`, `claude-sonnet-4`, `claude-sonnet-4-5`, `claude-sonnet-4-5-20250929`, `claude-sonnet-4-6`, `claude-sonnet-5`, `claude-sonnet-5-5`, `claude-opus-4-5`, `claude-opus-4-6`, `claude-opus-4-7`, `claude-opus-4-8`, `claude-opus-5`, `claude-opus-5-5`, `claude-fable-5`, `claude-fable-5-1`, `claude-3-5-sonnet-latest`, `claude-3-7-sonnet-latest` |
+| OpenAI | `gpt-4o`, `gpt-4o-mini`, `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, `gpt-5.4`, `gpt-5.4-mini`, `gpt-5.4-nano`, `gpt-5.5`, `gpt-5.6`, `gpt-5.6-sol`, `gpt-5.6-luna`, `gpt-5.6-terra`, `gpt-6`, `gpt-6-sol`, `gpt-6-luna`, `gpt-6-astra`, `gpt-6.1`, `gpt-6.1-sol`, `gpt-6.1-luna`, `o3`, `o3-mini`, `o4-mini` |
+| Gemini | `gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-2.5-pro`, `gemini-3.1-pro-preview`, `gemini-3.8-flash`, `gemini-4-argon` |
+
+Send the bare id. A prefixed string such as `openai/gpt-4o` is a different name and is not aliased. Image, speech, and transcription names stay on `grok-image`, `grok-tts`, and `grok-asr`.
+
 ## Requirements
 
 - Python 3.12

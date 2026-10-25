@@ -49,7 +49,61 @@ def main() -> int:
     except (json.JSONDecodeError, AttributeError):
         ids = []
     needed = {"grok-4.7", "grok-image", "grok-tts", "grok-asr"}
-    passed &= expect("models", status == 200 and needed <= set(ids), f"HTTP {status} ids={ids}")
+    aliases = {
+        "claude-haiku-4-5",
+        "claude-haiku-5-5",
+        "claude-sonnet-5",
+        "claude-sonnet-5-5",
+        "claude-opus-5",
+        "claude-opus-5-5",
+        "claude-fable-5",
+        "claude-fable-5-1",
+        "gpt-5",
+        "gpt-5.6",
+        "gpt-5-mini",
+        "gpt-5-nano",
+        "gpt-6",
+        "gpt-6-sol",
+        "gpt-6-luna",
+        "gpt-6.1",
+        "gpt-6.1-sol",
+        "gpt-6.1-luna",
+        "gpt-4o",
+        "gpt-4o-mini",
+        "gemini-2.5-pro",
+        "gemini-4-argon",
+    }
+    missing = sorted((needed | aliases) - set(ids))
+    passed &= expect(
+        "models",
+        status == 200 and not missing,
+        f"HTTP {status} count={len(ids)} missing={missing}",
+    )
+
+    ui_names = []
+    ui_status = 0
+    ui_total = None
+    for page in (1, 2):
+        ui_status, _ctype, raw = request(
+            "GET", f"/v2/model/info?include_team_models=true&page={page}&size=50"
+        )
+        try:
+            body = json.loads(raw)
+            ui_total = body.get("total_count")
+            ui_names.extend(row.get("model_name") for row in body.get("data", []))
+        except json.JSONDecodeError:
+            ui_names = []
+            break
+    ui_missing = sorted((needed | aliases) - set(ui_names))
+    passed &= expect(
+        "ui-models",
+        ui_status == 200
+        and not ui_missing
+        and "gpt-5-mini" in ui_names[:50]
+        and "claude-haiku-4-5" in ui_names[:50]
+        and "grok-image" in ui_names[:50],
+        f"HTTP {ui_status} total={ui_total} page1={ui_names[:50]} missing={ui_missing}",
+    )
 
     status, _ctype, raw = request("GET", "/model/info")
     modes = {}
@@ -62,6 +116,8 @@ def main() -> int:
     passed &= expect(
         "model-info",
         modes.get("grok-4.7") == "chat"
+        and modes.get("gpt-5-mini") == "chat"
+        and modes.get("claude-sonnet-5-5") == "chat"
         and modes.get("grok-image") == "image_generation"
         and modes.get("grok-tts") == "audio_speech"
         and modes.get("grok-asr") == "audio_transcription",
@@ -82,6 +138,43 @@ def main() -> int:
     except (json.JSONDecodeError, KeyError, IndexError, TypeError):
         content = raw[:180].decode("utf-8", "replace")
     passed &= expect("chat", status == 200 and "pong" in content.lower(), f"HTTP {status} {content[:80]!r}")
+
+    alias_chat = json.dumps(
+        {
+            "model": "gpt-5-mini",
+            "messages": [{"role": "user", "content": "Reply with the single word pong."}],
+            "max_tokens": 16,
+        }
+    ).encode()
+    status, _ctype, raw = request("POST", "/v1/chat/completions", alias_chat, {"Content-Type": "application/json"})
+    alias_content = ""
+    alias_model = ""
+    try:
+        alias_body = json.loads(raw)
+        alias_content = alias_body["choices"][0]["message"].get("content") or ""
+        alias_model = str(alias_body.get("model") or "")
+    except (json.JSONDecodeError, KeyError, IndexError, TypeError):
+        alias_content = raw[:180].decode("utf-8", "replace")
+    passed &= expect(
+        "alias-chat",
+        status == 200 and "pong" in alias_content.lower(),
+        f"HTTP {status} model={alias_model!r} {alias_content[:80]!r}",
+    )
+
+    anthropic = json.dumps(
+        {
+            "model": "claude-haiku-4-5",
+            "max_tokens": 16,
+            "messages": [{"role": "user", "content": "Reply with the single word pong."}],
+        }
+    ).encode()
+    status, _ctype, raw = request("POST", "/v1/messages", anthropic, {"Content-Type": "application/json"})
+    anthropic_text = raw.decode("utf-8", "replace")
+    passed &= expect(
+        "alias-messages",
+        status == 200 and "pong" in anthropic_text.lower(),
+        f"HTTP {status} bytes={len(raw)}",
+    )
 
     streamed = json.dumps(
         {
