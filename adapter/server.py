@@ -29,7 +29,11 @@ ROOT = Path(__file__).resolve().parent.parent
 MEDIA_DIR = ROOT / "media"
 WORK_DIR = ROOT / "var" / "jobs"
 BEEP_PATH = ROOT / "var" / "beep.mp3"
-PUBLIC_BASE = os.environ.get("ADAPTER_PUBLIC_BASE", "http://127.0.0.1:4010").rstrip("/")
+_ADAPTER_HOST = os.environ.get("ADAPTER_HOST", "127.0.0.1")
+_ADAPTER_PORT = os.environ.get("ADAPTER_PORT", "4010")
+PUBLIC_BASE = os.environ.get(
+    "ADAPTER_PUBLIC_BASE", f"http://{_ADAPTER_HOST}:{_ADAPTER_PORT}"
+).rstrip("/")
 ADAPTER_API_KEY = os.environ.get("ADAPTER_API_KEY", "")
 IMAGE_LOCK = threading.Lock()
 

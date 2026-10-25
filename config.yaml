@@ -7,7 +7,7 @@ model_list:
   - model_name: grok-4.7
     litellm_params:
       model: openai/grok-4.7
-      api_base: http://127.0.0.1:4010/v1
+      api_base: os.environ/ADAPTER_API_BASE
       api_key: os.environ/ADAPTER_API_KEY
       timeout: 300
     model_info:
@@ -18,7 +18,7 @@ model_list:
   - model_name: grok-4.7-build-fast
     litellm_params:
       model: openai/grok-4.7-build-fast
-      api_base: http://127.0.0.1:4010/v1
+      api_base: os.environ/ADAPTER_API_BASE
       api_key: os.environ/ADAPTER_API_KEY
       timeout: 300
     model_info:
@@ -29,7 +29,7 @@ model_list:
   - model_name: grok-4.6
     litellm_params:
       model: openai/grok-4.6
-      api_base: http://127.0.0.1:4010/v1
+      api_base: os.environ/ADAPTER_API_BASE
       api_key: os.environ/ADAPTER_API_KEY
       timeout: 300
     model_info:
@@ -40,7 +40,7 @@ model_list:
   - model_name: grok-4.5
     litellm_params:
       model: openai/grok-4.5
-      api_base: http://127.0.0.1:4010/v1
+      api_base: os.environ/ADAPTER_API_BASE
       api_key: os.environ/ADAPTER_API_KEY
       timeout: 300
     model_info:
@@ -51,7 +51,7 @@ model_list:
   - model_name: grok-image
     litellm_params:
       model: openai/dall-e-3
-      api_base: http://127.0.0.1:4010/v1
+      api_base: os.environ/ADAPTER_API_BASE
       api_key: os.environ/ADAPTER_API_KEY
       timeout: 300
     model_info:
@@ -60,7 +60,7 @@ model_list:
   - model_name: grok-tts
     litellm_params:
       model: openai/tts-1
-      api_base: http://127.0.0.1:4010/v1
+      api_base: os.environ/ADAPTER_API_BASE
       api_key: os.environ/ADAPTER_API_KEY
       timeout: 60
     model_info:
@@ -69,7 +69,7 @@ model_list:
   - model_name: grok-asr
     litellm_params:
       model: openai/whisper-1
-      api_base: http://127.0.0.1:4010/v1
+      api_base: os.environ/ADAPTER_API_BASE
       api_key: os.environ/ADAPTER_API_KEY
       timeout: 60
     model_info:
